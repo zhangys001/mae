@@ -133,11 +133,11 @@ def main(args):
 
     # simple augmentation
     transform_train = transforms.Compose([
-            transforms.RandomCrop(32, padding=4),
+            transforms.RandomResizedCrop(96, scale=(0.2, 1.0)),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], std=[0.2023, 0.1994, 0.2010])])
-    dataset_train = datasets.CIFAR10(root=args.data_path, train=True, download=True, transform=transform_train)
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+    dataset_train = datasets.STL10(root=args.data_path, split='unlabeled', download=True, transform=transform_train)
     print(dataset_train)
 
     if True:  # args.distributed:
@@ -168,6 +168,7 @@ def main(args):
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
 
     model.to(device)
+    model = torch.compile(model, mode="reduce-overhead")
 
     model_without_ddp = model
     print("Model = %s" % str(model_without_ddp))

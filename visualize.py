@@ -29,12 +29,12 @@ def visualize(checkpoint_path, model_name='mae_vit_base_patch4', mask_ratio=0.75
                               ]))
 
     model = models_mae.__dict__[model_name](norm_pix_loss=False)
-    ckpt = torch.load(checkpoint_path, map_location='cpu')
+    ckpt = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
     model.load_state_dict(ckpt['model'], strict=False)
     model.eval()
 
     torch.manual_seed(42)
-    fig, axes = plt.subplots(n_imgs, 4, figsize=(12, 3 * n_imgs))
+    fig, axes = plt.subplots(n_imgs, 4, figsize=(12, 2.5 * n_imgs))
 
     for i in range(n_imgs):
         idx = torch.randint(0, len(dataset), (1,)).item()
@@ -76,6 +76,6 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint', default='./output_dir/checkpoint-199.pth', help='path to checkpoint')
     parser.add_argument('--model', default='mae_vit_base_patch4')
     parser.add_argument('--mask_ratio', type=float, default=0.75)
-    parser.add_argument('--n_imgs', type=int, default=4)
+    parser.add_argument('--n_imgs', type=int, default=8)
     args = parser.parse_args()
     visualize(args.checkpoint, args.model, args.mask_ratio, args.n_imgs)
